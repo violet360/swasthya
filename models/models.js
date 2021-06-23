@@ -3,13 +3,7 @@ const user = (sequelize, Sequelize) => {
         user_id: {
             primaryKey: true,
             type: Sequelize.STRING,
-
         },
-
-        doctorID: {
-            type: Sequelize.STRING
-        },
-
         username: {
             type: Sequelize.STRING
         },

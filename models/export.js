@@ -39,7 +39,6 @@ database.healthJournal.belongsTo(database.user, {
 database.doctor.belongsToMany(database.user, {through: database.consult, foreignKey:'doctorID', otherKey:'userID'})
 database.user.belongsToMany(database.doctor, {through: database.consult, foreignKey:'userID', otherKey:'doctorID'})
 
-
 module.exports = {
     database
 }
