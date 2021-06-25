@@ -1,6 +1,6 @@
 const isAuth = (req, res, next) => {
-    const { userId } = req.session;
-    if (userId) {
+    const { loggerID } = req.session;
+    if (loggerID) {
         next()
     } else {
         res.redirect('/login');

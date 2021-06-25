@@ -79,12 +79,6 @@ const scoreCard = (sequelize, Sequelize) => {
         userID: {
             type: Sequelize.STRING
         },
-        height: {
-            type: Sequelize.INTEGER
-        },
-        weight: {
-            type: Sequelize.INTEGER
-        },
         googleFitScore: {
             type: Sequelize.INTEGER
         }

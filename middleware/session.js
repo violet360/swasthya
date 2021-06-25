@@ -12,6 +12,6 @@ module.exports = session({
         client: redisClient
     }),
     cookie: {
-        maxAge: 1000000
+        maxAge: 1000*60*60*24
     }
 })

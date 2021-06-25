@@ -49,7 +49,7 @@ router.post('/signin', async (req, res) => {
         })
         if (loggedinUser) {
             console.log(loggedinUser.user_id)
-            req.session.user_id = loggedinUser.user_id;
+            req.session.loggerID = loggedinUser.user_id;
             res.status(200).send(loggedinUser);
         } else {
             res.status(404).send({

@@ -26,13 +26,11 @@ router.post('/signup', async (req, res) => {
                 res.status(200).send(newDoc);
             }
             catch (err) {
-                console.log(err, "---")
                 res.status(500).send({ msg: "some Internal error!" })
             }
         }
     }
     catch (err) {
-        console.log(err)
         res.status(500).send({ msg: "Internal error!" })
     }
 })
@@ -42,14 +40,12 @@ router.post('/signup', async (req, res) => {
 router.post('/signin', async (req, res) => {
     let doc = req.body;
     doc.password = crypto.createHash('sha256').update(doc.password).digest('hex');
-    console.log(doc, "++++++++++++++\n")
     try {
         const loggedInDoc = await doctor.findOne({
             where: { [Op.and]: [doc] }
         })
         if (loggedInDoc) {
-            console.log(loggedInDoc.doctor_id)
-            req.session.doctor_id = loggedInDoc.doctor_id;
+            req.session.loggerID = loggedInDoc.doctor_id;
             res.status(200).send(loggedInDoc);
         } else {
             res.status(404).send({
@@ -57,7 +53,6 @@ router.post('/signin', async (req, res) => {
             })
         }
     } catch (err) {
-        console.log(err)
         res.status(500).send({
             err
         });
