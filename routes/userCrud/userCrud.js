@@ -34,9 +34,12 @@ const userCheck =
   });
 
 router.post("/scoreCard", userCheck, async (req, res) => {
-  const { sessID } = req.session.loggerID;
+  const  sessID  = req.session.loggerID;
+//   console.log(sessID)
+// console.log(req.session.loggerID)
   const { score } = req.query;
   const scoreObj = { userID: sessID, googleFitScore: score };
+//   res.sendStatus(200)
   try {
     const newScore = await scoreCard.create(scoreObj);
 
@@ -90,15 +93,47 @@ router.post("/allow", userCheck, async (req, res) => {
   }
 });
 
-//not yet testable
+
 router.post("/", async (req, res) => {
   const { username } = req.params;
+  let userObj = await user.findOne({where : {username}} )
+  const scores = await scoreCard.findAll({where:{userID:userObj.user_id}, order : [['createdAt', 'ASC']]});
+  const fitScores = [];
+  for(s of scores) {
+      fitScores.push(s.dataValues.googleFitScore)
+  }
+
+  const journals = await healthJournal.findAll({where:{userID:userObj.user_id}, order : [['createdAt', 'ASC']]});
+  const hJournals = []
+  for(j of journals) {
+    hJournals.push({title : j.dataValues.title, description: j.dataValues.description})
+  }
+
+  const userInfo = userObj.dataValues;
+
+  const consultations = await consult.findAll({where: {userID : userObj.user_id}, order : [['createdAt', 'ASC']]});
+
+  let doctors = []
+  for(c of consultations) {
+    doctors.push(c.doctorID)
+  }
+  const docCollect = await doctor.findAll({
+    where: { doctor_id: { [Op.in]: doctors } },
+  });
+
+  doctors = []
+
+  for(doc of docCollect) {
+      doctors.push(doc.dataValues)
+  }
+
+  console.log(doctors,"===", fitScores, "---", hJournals, "\n")
+//   res.sendStatus(200)
+//   res.sendStatus(200);
   const sessID = req.session.loggerID;
   if (sessID == undefined) {
-    /*return 
-      {
-          fitScoreList : []
-      } */
+    res.status(200).send({fitScores})
+
   } else {
     const loggedInObj = await user.findOne({
       where: { [Op.and]: [{ user_id: sessID, username }] },
@@ -107,11 +142,18 @@ router.post("/", async (req, res) => {
         /*
         return 
         {
+            userInfo : {}
             fitScoreList : []
             journals : []
             doctors : []
         }
         */
+       res.status(200).send({
+           fitScores,
+           userInfo,
+           journals : hJournals,
+           doctors
+       })
     } else {
         /*
         resp 
@@ -119,8 +161,8 @@ router.post("/", async (req, res) => {
             fitScoreList = []
         }
         */
+       res.status(200).send({fitScores})
     }
-    res.status(200).send({ msg: "/:username/", username });
   }
 });
 
