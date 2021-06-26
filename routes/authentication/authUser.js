@@ -9,6 +9,8 @@ const {
 const user = database.user;
 const Op = database.Sequelize.Op //operator
 
+// console.log("userAuth")
+
 router.post('/signup', async (req, res) => {
     let obj = req.body;
     obj.password = crypto.createHash('sha256').update(obj.password).digest('hex'); //hashing the password for storing in the database

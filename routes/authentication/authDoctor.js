@@ -8,6 +8,10 @@ const {
 
 const doctor = database.doctor;
 const Op = database.Sequelize.Op //operator
+router.use((req, res, next) => {
+    console.log(`${req.method} - ${req.url}`);
+    next();
+});
 
 router.post('/signup', async (req, res) => {
     let doc = req.body;

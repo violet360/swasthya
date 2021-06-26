@@ -22,7 +22,6 @@ const userCheck =
       const loggedInObj = await user.findOne({
         where: { [Op.and]: [{ user_id: sessID, username }] },
       });
-      // console.log(loggerInObj)
       if (loggedInObj != null) {
         next();
       } else {
@@ -35,11 +34,8 @@ const userCheck =
 
 router.post("/scoreCard", userCheck, async (req, res) => {
   const  sessID  = req.session.loggerID;
-//   console.log(sessID)
-// console.log(req.session.loggerID)
   const { score } = req.query;
   const scoreObj = { userID: sessID, googleFitScore: score };
-//   res.sendStatus(200)
   try {
     const newScore = await scoreCard.create(scoreObj);
 
@@ -94,7 +90,7 @@ router.post("/allow", userCheck, async (req, res) => {
 });
 
 
-router.post("/", async (req, res) => {
+router.get("/", async (req, res) => {
   const { username } = req.params;
   let userObj = await user.findOne({where : {username}} )
   const scores = await scoreCard.findAll({where:{userID:userObj.user_id}, order : [['createdAt', 'ASC']]});
@@ -127,9 +123,6 @@ router.post("/", async (req, res) => {
       doctors.push(doc.dataValues)
   }
 
-  console.log(doctors,"===", fitScores, "---", hJournals, "\n")
-//   res.sendStatus(200)
-//   res.sendStatus(200);
   const sessID = req.session.loggerID;
   if (sessID == undefined) {
     res.status(200).send({fitScores})
@@ -138,22 +131,44 @@ router.post("/", async (req, res) => {
     const loggedInObj = await user.findOne({
       where: { [Op.and]: [{ user_id: sessID, username }] },
     });
+
+    const loggedInDoc = await doctor.findOne({
+        where: {[Op.and]:[{doctor_id: sessID}]}
+    })
+
     if (loggedInObj) {
         /*
         return 
-        {
+        {signin
             userInfo : {}
             fitScoreList : []
             journals : []
             doctors : []
         }
         */
+
        res.status(200).send({
            fitScores,
            userInfo,
            journals : hJournals,
            doctors
        })
+    } else if(loggedInDoc) {
+        const userObjRequested = await user.findOne({
+            where: { username },
+          });
+          const consultations = await consult.findOne({where: {[Op.and]:[{doctorID: sessID, userID: userObjRequested.user_id}]}});
+          if(consultations!=null) {
+            res.status(200).send({
+                fitScores,
+                userInfo,
+                journals : hJournals,
+                doctors
+            })
+          } else {
+            res.sendStatus(400);
+          }
+    
     } else {
         /*
         resp 
@@ -164,6 +179,7 @@ router.post("/", async (req, res) => {
        res.status(200).send({fitScores})
     }
   }
+
 });
 
 router.post("/update", userCheck, async (req, res) => {
