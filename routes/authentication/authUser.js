@@ -5,11 +5,18 @@ var crypto = require('crypto'); // to hash password
 const {
     v4: uuidv4,
 } = require('uuid');
+const {isAuth} = require("../../middleware/auth");
+
 
 const user = database.user;
 const Op = database.Sequelize.Op //operator
 
 // console.log("userAuth")
+
+router.use((req, res, next) => {
+    console.log(`${req.method} - ${req.url}`);
+    next();
+  });
 
 router.post('/signup', async (req, res) => {
     let obj = req.body;
@@ -66,11 +73,12 @@ router.post('/signin', async (req, res) => {
     }
 });
 
-router.post('/logout', (req, res) => {
+router.post('/logout', isAuth, (req, res) => {
     req.session.destroy();
     res.status(200).send({
         msg: "Good bye"
     })
 });
+
 
 module.exports = router;

@@ -13,6 +13,11 @@ const consult = database.consult;
 
 const Op = database.Sequelize.Op; //operator
 
+router.use((req, res, next) => {
+  console.log(`${req.method} - ${req.url}`);
+  next();
+});
+
 const userCheck =
   (isAuth,
   async (req, res, next) => {
